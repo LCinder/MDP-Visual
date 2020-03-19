@@ -50,12 +50,10 @@ function sMasLejano() {
 function distancia(i, s, k) {
   let d = 0.0;
 
-  if(!s.includes(i)){
       if(k<i)
         d += _dist[k][i];
       else
         d += _dist[i][k];
-  }
 
   return d;
 }
@@ -64,19 +62,16 @@ function criterioSeleccion(s, sel) {
   let iMax;
   let max = 0.0, d = 0.0;
 
-  for (let i=0; i < sel.length; i++) {
-    for (let j=0; j < s.length; j++) {
+  for (let i=0; i < s.length; i++) {
+    for (let j=0; j < sel.length; j++)
+        d += distancia(sel[j], sel, s[i]);
 
-      if(s.includes(j)) {
-        d += distancia(sel[i], s, s[j]);
-
-      if (d > max)
+      if (d > max) {
         max = d;
-        iMax = j;
-
+        iMax = s[i];
       }
+
       d = 0.0;
-    }
   }
 
   return iMax;
@@ -97,9 +92,7 @@ function Greedy() {
   while (sel.length != N_ELEGIDOS) {
     k = criterioSeleccion(s, sel);
     sel.push(k);
-
     s.splice(s.indexOf(k), 1);
-
   }
 
   return sel;
