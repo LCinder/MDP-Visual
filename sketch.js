@@ -1,13 +1,49 @@
 
 let puntos = [];
 let _dist = [];
-let NUM_PUNTOS = 500;
-let CANVAS_SIZE_X = 1300;
-let CANVAS_SIZE_Y = 650;
-let N_ELEGIDOS = 50;
+let NUM_PUNTOS = -1;
+let CANVAS_SIZE_X = 1000;
+let CANVAS_SIZE_Y = 450;
+let N_ELEGIDOS = -1;
+let sF = [];
+let iter = 0;
+let a=0.0;
+let scal=0.0;
+
+
 
 function setup() {
   createCanvas(CANVAS_SIZE_X, CANVAS_SIZE_Y);
+
+
+  mdp = createElement('h2','MDP - Problema de la Máxima Diversidad');
+  mdp.position(1000, 50);
+
+  mElementos = createElement('h4','Elementos a escoger (m)');
+  mElementos.position(1100, 90);
+  inputM = createInput();
+  inputM.position(1100, 150);
+
+  nElementos = createElement('h4','Elementos totales (n)');
+  nElementos.position(1100, 170);
+  inputN = createInput();
+  inputN.position(1100, 230);
+
+  button = createButton('Iniciar');
+  button.position(1100, 280);
+  button.mousePressed(iniciar);
+
+}
+
+function iniciar() {
+  puntos = [];
+  sF = [];
+  _dist = [];
+  iter = 7;
+  scal = 0.0;
+
+  NUM_PUNTOS = inputN.value();
+  N_ELEGIDOS = inputM.value();
 
   for (let i = 0; i < NUM_PUNTOS; i++)
     puntos.push(createVector(random(40, CANVAS_SIZE_X-40), random(40, CANVAS_SIZE_Y-40)));
@@ -22,6 +58,15 @@ function setup() {
     }
   }
 
+    background(50, 50, 50);
+  stroke(255, 0, 0);
+  strokeWeight(7);
+  for (let p of puntos)
+    point(p.x, p.y);
+
+  sF = Greedy();
+
+  draw();
 }
 
 function sMasLejano() {
@@ -98,21 +143,50 @@ function Greedy() {
   return sel;
 }
 
+function primerElemento(s) {
+    if( 0 < s.length )
+        return s[0];
+    else return 0;
+}
 
 function draw() {
-  background(0);
-  stroke(255, 0, 0);
-  strokeWeight(10);
-  for (let p of puntos)
-    point(p.x, p.y);
 
-  let s = Greedy();
+    if(NUM_PUNTOS != -1) {
 
-    console.log(s.length);
-  strokeWeight(15);
-  stroke(0, 255, 0);
-  for (let p of s)
-    point(puntos[p].x, puntos[p].y);
+      if(sF.length >= 0)
+        loop();
 
-  noLoop();
+      if(iter<35) {
+          if(iter< 25) {
+              a = a + 0.04;
+              scal++;
+          }
+
+          else {
+              a = a - 0.04;
+              scal--;
+          }
+
+          fill(255);
+          let p = primerElemento(sF);
+
+          strokeWeight(scal);
+          point(puntos[p].x, puntos[p].y);
+
+          iter++;
+      }
+
+      else {
+          a=0.0;
+          scal=0.0;
+          iter=7;
+          sF.splice(0, 1);
+      }
+
+
+    frameRate(100);
+
+    if(sF.length <= 0)
+        noLoop();
+    }
 }
